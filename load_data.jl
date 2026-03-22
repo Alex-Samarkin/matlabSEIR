@@ -56,7 +56,7 @@ default(
     
     # ─── Шрифт ─────────────────────────────────────────────────────────
     # Helvetica / Arial — стандарт большинства топ-журналов
-    fontfamily      = "Helvetica",
+    fontfamily      = "Arial",   # Helvetica может быть недоступен, Arial — хороший аналог
     titlefontsize   = 28,
     guidefontsize   = 24,         # подписи осей
     tickfontsize    = 20,

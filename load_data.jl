@@ -45,6 +45,63 @@ first(covid_all_daily, 5) |> println
 
 using Plots
 using Statistics
+using Measures
+
+default(
+    # ─── Размер и разрешение ───────────────────────────────────────────
+    # Nature/Science: одна колонка = 89mm, две = 183mm
+    # 89mm @ 600dpi = 2102px
+    size        = (2102, 1600),   # single-column, ~4:3
+    dpi         = 600,            # минимум для line art (Nature требует 300+, Cell — 600)
+    
+    # ─── Шрифт ─────────────────────────────────────────────────────────
+    # Helvetica / Arial — стандарт большинства топ-журналов
+    fontfamily      = "Helvetica",
+    titlefontsize   = 28,
+    guidefontsize   = 24,         # подписи осей
+    tickfontsize    = 20,
+    legendfontsize  = 20,
+    annotationfontsize = 20,
+
+    # ─── Линии ─────────────────────────────────────────────────────────
+    linewidth           = 2.5,
+    thickness_scaling   = 1.0,    # не масштабировать поверх явных значений
+    markerstrokewidth   = 1.5,
+    markersize          = 8,
+
+    # ─── Оси и сетка ───────────────────────────────────────────────────
+    grid            = true,
+    gridalpha       = 0.25,
+    gridlinewidth   = 1.0,
+    gridstyle       = :dot,
+    minorgrid       = false,
+    framestyle      = :box,       # рамка со всех сторон — стандарт для Science/Nature
+    tick_direction  = :in,        # тики внутрь
+
+    # ─── Цвета ─────────────────────────────────────────────────────────
+    # Wong 2011 — colorblind-safe, принят как стандарт в научной визуализации
+    palette         = [
+        RGB(0/255,  114/255, 178/255),   # синий
+        RGB(230/255, 159/255,   0/255),   # жёлтый
+        RGB(  0/255, 158/255, 115/255),   # зелёный
+        RGB(213/255,  94/255,   0/255),   # оранжевый
+        RGB( 86/255, 180/255, 233/255),   # голубой
+        RGB(204/255, 121/255, 167/255),   # лиловый
+        RGB(  0/255,   0/255,   0/255),   # чёрный
+    ],
+    background_color        = :white,
+    background_color_legend = :white,
+    foreground_color        = :black,
+
+    # ─── Отступы ───────────────────────────────────────────────────────
+    margin          = 8mm,
+    left_margin     = 12mm,       # место для ylabel
+    bottom_margin   = 10mm,       # место для xlabel
+    
+    # ─── Легенда ───────────────────────────────────────────────────────
+    legend          = :topright,
+    legendlinewidth = 2.5,
+)
 
 gr();  # Используем бэкенд GR для лучшей производительности при сохранении графиков
 
@@ -135,17 +192,18 @@ display(plot(grid.date, y_interp, label = "USA (interpolated)", linewidth = 2.5,
 
 # Функция для скользящего среднего
 function rolling_mean(arr, window_size)
-    cumsum = cumsum(arr)
-    result = similar(arr, length(arr))
-    for i in 1:length(arr)
-        if i < window_size
-            result[i] = cumsum[i] / i
-        else
-            result[i] = (cumsum[i] - cumsum[i - window_size]) / window_size
-        end
+    a  = Float64.(arr)          # убиваем SimpleRatio до любой арифметики
+    cs = cumsum(a)
+    n  = length(cs)
+    result = Vector{Float64}(undef, n)
+    for i in 1:n
+        result[i] = i <= window_size ?
+            cs[i] / i :
+            (cs[i] - cs[i - window_size]) / window_size
     end
     return result
 end
+
 y_interp2 = rolling_mean(y_interp, 7)
 display(plot(grid.date, y_interp2, label = "USA (7-day rolling mean)", linewidth = 2.5, title = "USA Cumulative Cases (7-day rolling mean)"))
 

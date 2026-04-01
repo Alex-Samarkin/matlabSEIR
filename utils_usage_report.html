@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчёт об использовании utils.jl</title>
+    <style>
+        :root {
+            --primary: #0072B5;
+            --secondary: #E69F02;
+            --success: #009E73;
+            --danger: #D55E00;
+            --info: #56B4E9;
+            --purple: #CC79A7;
+            --dark: #000000;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                         "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: var(--light);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #005a8f);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card:nth-child(2) { border-left-color: var(--secondary); }
+        .stat-card:nth-child(2) h3 { color: var(--secondary); }
+        
+        .stat-card:nth-child(3) { border-left-color: var(--success); }
+        .stat-card:nth-child(3) h3 { color: var(--success); }
+        
+        section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        section h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--light);
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .func-name {
+            font-family: "Consolas", "Monaco", monospace;
+            background: var(--light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .file-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .file-load_data { background: #e3f2fd; color: #1565c0; }
+        .file-load_data2 { background: #fff3e0; color: #ef6c00; }
+        .file-waves_detection { background: #f3e5f5; color: #7b1fa2; }
+        .file-waves_and_stamms { background: #e8f5e9; color: #2e7d32; }
+        .file-seir_modelling { background: #fce4ec; color: #c2185b; }
+        .file-seird_pipeline { background: #e0f7fa; color: #00838f; }
+        .file-utils { background: #f5f5f5; color: #616161; }
+        
+        .usage-context {
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.85rem;
+            background: #263238;
+            color: #aed581;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+            overflow-x: auto;
+        }
+        
+        .line-num {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .chart-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 4px;
+        }
+        
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .bar-label {
+            min-width: 150px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .bar-value {
+            min-width: 40px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            header { background: #0072B5; }
+            section { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Отчёт об использовании utils.jl</h1>
+            <p>Анализ вызовов функций в проекте SEIR/SEIRD моделирования COVID-19</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>11</h3>
+                <p>Функций в реестре</p>
+            </div>
+            <div class="stat-card">
+                <h3>59</h3>
+                <p>Всего вызовов</p>
+            </div>
+            <div class="stat-card">
+                <h3>6</h3>
+                <p>Файлов проекта</p>
+            </div>
+        </div>
+        
+        <section>
+            <h2>📈 Популярность функций</h2>
+            <div class="chart-container">
+                <div class="bar-chart">
+            <div class="bar-row">
+                <span class="bar-label">rolling_mean</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 100.0%"></div>
+                </div>
+                <span class="bar-value">10</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">select_wave</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 90.0%"></div>
+                </div>
+                <span class="bar-value">9</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">plot_wave_detail</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 70.0%"></div>
+                </div>
+                <span class="bar-value">7</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">assign_waves</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 60.0%"></div>
+                </div>
+                <span class="bar-value">6</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">interp_missing_linear</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">find_wave_minima</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">plot_waves_gr</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">get_variant_for_date</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">load_covid_daily</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">fill_daily_grid</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 40.0%"></div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">annotate_variants!</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 30.0%"></div>
+                </div>
+                <span class="bar-value">3</span>
+            </div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>📁 Файлы проекта</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Файл</th>
+                        <th>Описание</th>
+                        <th>Использует функций</th>
+                    </tr>
+                </thead>
+                <tbody>
+            <tr>
+                <td><span class="file-badge file-load_data">load_data.jl</span></td>
+                <td>Загрузка WHO данных, предобработка</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td><span class="file-badge file-load_data2">load_data2.jl</span></td>
+                <td>Альтернативный загрузчик данных</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td><span class="file-badge file-seir_modelling">seir modelling.jl</span></td>
+                <td>Анализ отдельных волн</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td><span class="file-badge file-utils">utils.jl</span></td>
+                <td>Общие утилиты (этот файл)</td>
+                <td>11</td>
+            </tr>
+            <tr>
+                <td><span class="file-badge file-waves_and_stamms">waves_and_stamms.jl</span></td>
+                <td>Параметры штаммов, timeline</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><span class="file-badge file-waves_detection">waves_detection.jl</span></td>
+                <td>Обнаружение волн, визуализация</td>
+                <td>6</td>
+            </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section>
+            <h2>🔧 Детальный разбор функций</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Функция</th>
+                        <th>Места использования</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="func-name">rolling_mean</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 194</span>
+                                <div class="usage-context">y_interp2 = rolling_mean(y_interp, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 207</span>
+                                <div class="usage-context">y_interp2 = rolling_mean(y_interp, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 212</span>
+                                <div class="usage-context">daily_smooth = rolling_mean(daily, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 226</span>
+                                <div class="usage-context">y_interp_smooth = rolling_mean(y_interp, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 228</span>
+                                <div class="usage-context">daily_smooth = rolling_mean(daily, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data2">load_data2.jl</span>
+                                <span class="line-num">строка 204</span>
+                                <div class="usage-context">daily_smooth = rolling_mean(daily, 7)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 91</span>
+                                <div class="usage-context">Определение локальной функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 137</span>
+                                <div class="usage-context">smoothed = rolling_mean(cases[!, country], window)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 434</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 591</span>
+                                <div class="usage-context">smoothed = rolling_mean(cases[!, country], window)</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">select_wave</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 310</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 347</span>
+                                <div class="usage-context">df = select_wave(cases, country_dict, 1, 2)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 351</span>
+                                <div class="usage-context">df = select_wave(cases, country_dict, 5, 3)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 463</span>
+                                <div class="usage-context">df = select_wave(cases, country_dict, 1, 2)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 469</span>
+                                <div class="usage-context">df = select_wave(cases, country_dict, 5, 3)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-seir_modelling">seir modelling.jl</span>
+                                <span class="line-num">строка 88</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-seir_modelling">seir modelling.jl</span>
+                                <span class="line-num">строка 223</span>
+                                <div class="usage-context">df = select_wave(cases, country_dict, 1, 2)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 672</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 677</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">plot_wave_detail</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 354</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 465</span>
+                                <div class="usage-context">p = plot_wave_detail(df, :Россия, 2)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 471</span>
+                                <div class="usage-context">p = plot_wave_detail(df, :Индия, 3)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-seir_modelling">seir modelling.jl</span>
+                                <span class="line-num">строка 114</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-seir_modelling">seir modelling.jl</span>
+                                <span class="line-num">строка 225</span>
+                                <div class="usage-context">p = plot_wave_detail(df, :Россия, 2)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 734</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 737</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">assign_waves</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 132</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 162</span>
+                                <div class="usage-context">cases, sm, mn = assign_waves(cases, c; ...)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 319</span>
+                                <div class="usage-context">assert ... запустите assign_waves()</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-seir_modelling">seir modelling.jl</span>
+                                <span class="line-num">строка 97</span>
+                                <div class="usage-context">assert ... запустите assign_waves()</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 579</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 585</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">interp_missing_linear</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 184</span>
+                                <div class="usage-context">y_interp = interp_missing_linear(grid.Cumulative_cases)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 225</span>
+                                <div class="usage-context">y_interp = interp_missing_linear(grid.Cumulative_cases)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data2">load_data2.jl</span>
+                                <span class="line-num">строка 199</span>
+                                <div class="usage-context">y_cum = interp_missing_linear(grid.Cumulative_cases)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 393</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">find_wave_minima</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 104</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 138</span>
+                                <div class="usage-context">minima = find_wave_minima(smoothed; ...)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 514</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 594</span>
+                                <div class="usage-context">minima = find_wave_minima(smoothed; ...)</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">plot_waves_gr</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 177</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_detection">waves_detection.jl</span>
+                                <span class="line-num">строка 288</span>
+                                <div class="usage-context">p = plot_waves_gr(cases, c, smoothed_all, minima_all)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 876</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 879</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">get_variant_for_date</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_and_stamms">waves_and_stamms.jl</span>
+                                <span class="line-num">строка 141</span>
+                                <div class="usage-context">Определение функции values_for_date</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 1018</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 1022</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 1156</span>
+                                <div class="usage-context">r = get_variant_for_date(cases.date[i], variants)</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">load_covid_daily</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 38</span>
+                                <div class="usage-context">covid_all_daily = load_covid_daily()</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 109</span>
+                                <div class="usage-context">covid_all_daily = load_covid_daily()</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data2">load_data2.jl</span>
+                                <span class="line-num">строка 161</span>
+                                <div class="usage-context">covid_all_daily = load_covid_daily()</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 289</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">fill_daily_grid</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 170</span>
+                                <div class="usage-context">grid = fill_daily_grid(usa)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data">load_data.jl</span>
+                                <span class="line-num">строка 224</span>
+                                <div class="usage-context">grid = fill_daily_grid(country_df)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-load_data2">load_data2.jl</span>
+                                <span class="line-num">строка 198</span>
+                                <div class="usage-context">grid = fill_daily_grid(d)</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 354</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="func-name">annotate_variants!</span></td>
+                        <td>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-waves_and_stamms">waves_and_stamms.jl</span>
+                                <span class="line-num">строка 178</span>
+                                <div class="usage-context">Заполнение колонок в цикле</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 1140</span>
+                                <div class="usage-context">Пример в docstring</div>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <span class="file-badge file-utils">utils.jl</span>
+                                <span class="line-num">строка 1143</span>
+                                <div class="usage-context">Определение функции</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <footer>
+            <p>Сгенерировано: 2026-03-30T11:30:00.130 | Проект: matlabSEIR | utils.jl</p>
+        </footer>
+    </div>
+</body>
+</html>

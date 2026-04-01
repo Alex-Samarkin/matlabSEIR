@@ -874,17 +874,17 @@ end
 
 # Раскомментируйте и настройте:
 #
-# results = main(
-#     csv_path       = "russia_covid_waves.csv",
-#     country_col    = "Россия",
-#     wave_col       = "Россия_волна",
-#     wave_number    = 2,
-#     N_population   = 146_000_000.0,
-#     I0             = 100.0,
-#     E0_factor      = 3.0,
-#     n_restarts     = 30,
-#     α_profile_range = 0.50:0.02:1.00,
-# )
+results = main(
+     csv_path       = "russia_covid_waves.csv",
+     country_col    = "Россия",
+     wave_col       = "Россия_волна",
+     wave_number    = 2,
+     N_population   = 146_000_000.0,
+     I0             = 100.0,
+     E0_factor      = 3.0,
+     n_restarts     = 30,
+     α_profile_range = 0.50:0.02:1.00,
+ )
 #
 # Для другой страны / волны:
 # results = main(csv_path="data.csv", country_col="Германия",

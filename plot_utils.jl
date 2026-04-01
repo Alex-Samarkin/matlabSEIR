@@ -23,7 +23,7 @@ using Plots
 using Statistics
 using Dates
 using Printf
-using StatsBase: cors
+using DataFrames
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 2. НАСТРОЙКИ И ТЕМЫ
@@ -132,15 +132,14 @@ function apply_theme(theme::NatureTheme)
         gridstyle = theme.gridstyle,
         framestyle = theme.framestyle,
         tick_direction = theme.tick_direction,
-        left_margin = Plots.mm(theme.left_margin),
-        bottom_margin = Plots.mm(theme.bottom_margin),
-        right_margin = Plots.mm(theme.margin),
-        top_margin = Plots.mm(theme.margin),
+        left_margin = (theme.left_margin, :mm),
+        bottom_margin = (theme.bottom_margin, :mm),
+        right_margin = (theme.margin, :mm),
+        top_margin = (theme.margin, :mm),
         palette = theme.palette,
         background_color = theme.background_color,
         foreground_color = theme.foreground_color,
         legend = :topright,
-        legendlinewidth = 2.5,
     )
     return nothing
 end
@@ -164,9 +163,9 @@ function apply_theme(theme::LightTheme)
         gridalpha = theme.gridalpha,
         framestyle = :box,
         tick_direction = :in,
-        margin = Plots.mm(8),
-        left_margin = Plots.mm(10),
-        bottom_margin = Plots.mm(8),
+        margin = (8, :mm),
+        left_margin = (10, :mm),
+        bottom_margin = (8, :mm),
         background_color = :white,
         legend = :topright,
     )
@@ -433,14 +432,14 @@ Heatmap корреляционной матрицы
 function plot_correlation_matrix(data; labels=nothing, kwargs...)
     # Вычисляем корреляционную матрицу
     if typeof(data) <: AbstractMatrix
-        corr_matrix = cors(data)
+        corr_matrix = cor(data)
         if labels === nothing
             labels = ["Var $i" for i in 1:size(data, 2)]
         end
     else
         # DataFrame
         numeric_cols = select(data, [name for name in names(data) if eltype(data[!, name]) <: Real])
-        corr_matrix = cors(Matrix(numeric_cols))
+        corr_matrix = cor(Matrix(numeric_cols))
         labels = names(numeric_cols)
     end
     
@@ -676,7 +675,7 @@ end
 function plot_multi_timeseries(dates::AbstractVector{<:Date}, 
                                 data_dict::Dict{String, <:AbstractVector};
                                 kwargs...)
-    p = plot(xlabel="Дата", ylabel="Значение", xrotation=45, kwargs...)
+    p = plot(;xlabel="Дата", ylabel="Значение", xrotation=45, kwargs...)
     
     for (label, values) in data_dict
         plot!(p, dates, values, label=label)
@@ -694,7 +693,8 @@ end
 function plot_comparison(x, y1::AbstractVector, y2::AbstractVector; 
                          labels::Tuple{String,String}=("Series 1", "Series 2"),
                          kwargs...)
-    p = plot(x, y1, label=labels[1], kwargs...)
+    p = plot(; kwargs...)
+    plot!(p, x, y1, label=labels[1])
     plot!(p, x, y2, label=labels[2])
     
     # Добавляем разность

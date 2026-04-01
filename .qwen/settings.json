@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(julia *)",
+      "Bash(dir *)",
+      "Bash(findstr *)"
+    ]
+  },
+  "$version": 3
+}

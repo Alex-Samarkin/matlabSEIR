@@ -1,3 +1,70 @@
+---
+marp: true
+theme: default
+paginate: true
+style: |
+  section {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    color: #333;
+  }
+  h1 {
+    color: #0066cc;
+    font-size: 36px;
+    border-bottom: 3px solid #0066cc;
+    padding-bottom: 10px;
+  }
+  h2 {
+    color: #0066cc;
+    font-size: 28px;
+    margin-top: 30px;
+  }
+  h3 {
+    color: #444;
+    font-size: 22px;
+  }
+  strong {
+    color: #0066cc;
+  }
+  table {
+    font-size: 18px;
+  }
+  thead {
+    background-color: #0066cc;
+    color: white;
+  }
+  code {
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+  pre {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  blockquote {
+    border-left: 4px solid #0066cc;
+    padding-left: 15px;
+    margin-left: 0;
+    color: #666;
+  }
+  a {
+    color: #0066cc;
+  }
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+---
+
 # Graphics Utilities Guide
 
 **Project:** matlabSEIR — COVID-19 Epidemiological Modeling  
@@ -75,7 +142,11 @@ p = quick_plot(x, y, title="Sine Wave", label="sin(x)")
 save_plot(p, filename="my_plot.png")
 ```
 
+---
+
 ### Available Functions
+
+---
 
 #### Themes
 
@@ -83,6 +154,8 @@ save_plot(p, filename="my_plot.png")
 |----------|-------------|
 | `use_nature_theme()` | Apply Nature/Science journal theme (600 DPI) |
 | `use_light_theme()` | Apply light theme for quick debugging (150 DPI) |
+
+---
 
 #### Basic Plots
 
@@ -94,6 +167,8 @@ save_plot(p, filename="my_plot.png")
 | `quick_histogram(data)` | Histogram | `quick_histogram(data, bins=30)` |
 | `quick_boxplot(data)` | Box plot | `quick_boxplot(data, labels=groups)` |
 
+---
+
 #### Statistical Plots
 
 | Function | Description |
@@ -103,6 +178,8 @@ save_plot(p, filename="my_plot.png")
 | `qqplot(data)` | QQ-plot for normality testing |
 | `plot_correlation_matrix(df)` | Heatmap of correlation matrix |
 
+---
+
 #### Time Series
 
 | Function | Description |
@@ -110,6 +187,8 @@ save_plot(p, filename="my_plot.png")
 | `plot_timeseries(dates, values)` | Single time series |
 | `plot_multi_timeseries(dates, dict)` | Multiple time series |
 | `plot_comparison(x, y1, y2)` | Compare two series (2 panels) |
+
+---
 
 #### Panels & Dashboards
 
@@ -119,6 +198,8 @@ save_plot(p, filename="my_plot.png")
 | `create_dashboard()` | Create empty dashboard |
 | `add_plot!(dash, plot)` | Add plot to dashboard |
 
+---
+
 #### Saving
 
 | Function | Description |
@@ -126,6 +207,8 @@ save_plot(p, filename="my_plot.png")
 | `save_plot(p, filename="...")` | Save plot to file |
 | `save_plot(p, format=:svg)` | Save as vector SVG |
 | `save_panel(plots, filename)` | Save panel of plots |
+
+---
 
 ### Example: Complete Workflow
 
@@ -153,6 +236,8 @@ save_plot(p, filename="covid_timeseries.png")
 
 ## makie_utils.jl (Makie.jl)
 
+---
+
 ### Quick Start
 
 ```julia
@@ -173,9 +258,13 @@ Legend(fig, ax, :rt)
 save_plot(fig, filename="my_plot.png", dpi=600)
 ```
 
+---
+
 ### Available Functions
 
-#### Themes
+---
+
+## Themes
 
 | Function | Description |
 |----------|-------------|
@@ -183,14 +272,18 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `use_makie_theme(:publication)` | Publication theme (900×600 @ 600 DPI) |
 | `use_makie_theme(:light)` | Light theme for debugging (400×300 @ 150 DPI) |
 
-#### Backends
+---
+
+## Backends
 
 | Function | Description |
 |----------|-------------|
 | `use_makie_backend(:cairo)` | Static images (PNG, SVG, PDF) |
 | `use_makie_backend(:gl)` | Interactive 3D and animations |
 
-#### Basic Plots
+---
+
+## Basic Plots
 
 | Function | Returns | Example |
 |----------|---------|---------|
@@ -200,7 +293,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `quick_histogram(data)` | `(fig, ax)` | `quick_histogram(data, bins=30)` |
 | `quick_boxplot(data)` | `(fig, ax)` | `quick_boxplot(data, labels=groups)` |
 
-#### Statistical Plots
+---
+
+## Statistical Plots
 
 | Function | Description |
 |----------|-------------|
@@ -209,7 +304,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `qqplot_makie(data)` | QQ-plot for normality testing |
 | `plot_correlation_matrix_makie(df)` | Heatmap of correlation matrix |
 
-#### Time Series
+---
+
+## Time Series
 
 | Function | Description |
 |----------|-------------|
@@ -217,7 +314,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `plot_multi_timeseries_makie(dates, dict)` | Multiple time series |
 | `plot_comparison_makie(x, y1, y2)` | Compare two series (2 panels) |
 
-#### Specialized Plots
+---
+
+## Specialized Plots
 
 | Function | Description |
 |----------|-------------|
@@ -225,7 +324,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `plot_contour(x, y, z)` | Contour plot |
 | `plot_surface(x, y, z)` | 3D surface (requires GLMakie) |
 
-#### Panels & Dashboards
+---
+
+## Panels & Dashboards
 
 | Function | Description |
 |----------|-------------|
@@ -234,7 +335,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `add_colorbar!(fig, plot)` | Add colorbar to figure |
 | `add_legend!(ax)` | Add legend to axis |
 
-#### Saving
+---
+
+## Saving
 
 | Function | Description |
 |----------|-------------|
@@ -243,7 +346,9 @@ save_plot(fig, filename="my_plot.png", dpi=600)
 | `save_plot(fig, format=:pdf)` | Save as vector PDF |
 | `save_plot_series(figs, filenames)` | Save multiple figures |
 
-#### Animations
+---
+
+## Animations
 
 ```julia
 function animate(frame)
@@ -253,6 +358,8 @@ end
 
 create_animation(animate, frames=60, filename="animation.mp4", fps=15)
 ```
+
+---
 
 ### Example: Complete Workflow
 
@@ -304,6 +411,8 @@ save_plot(fig, filename="covid_timeseries.png", dpi=600)
 - You want to create animations
 - You need modern, GPU-accelerated rendering
 
+---
+
 ### Feature Comparison Table
 
 | Feature | plot_utils.jl | makie_utils.jl |
@@ -320,6 +429,8 @@ save_plot(fig, filename="covid_timeseries.png", dpi=600)
 ---
 
 ## Examples
+
+---
 
 ### Example 1: Multi-Panel Figure (Plots.jl)
 
@@ -340,6 +451,8 @@ panel = quick_panel([p1, p2, p3, p4],
 save_plot(panel, filename="multi_panel.png")
 ```
 
+---
+
 ### Example 2: Multi-Panel Figure (Makie.jl)
 
 ```julia
@@ -357,6 +470,8 @@ end
 
 save_plot(fig, filename="multi_panel.png", dpi=300)
 ```
+
+---
 
 ### Example 3: Statistical Analysis Plot
 
@@ -381,6 +496,8 @@ y_pred = y_true .+ randn(100) .* 2
 # Residuals analysis
 plot_residuals_makie(y_true, y_pred)
 ```
+
+---
 
 ### Example 4: Correlation Heatmap
 
@@ -420,14 +537,18 @@ fontfamily = "TeX Gyre Heros"  # Alternative to Arial
 #### 2. Makie Legend errors
 
 The Makie API for legends has changed. Use:
+
 ```julia
 Legend(fig, ax, :rt)  # Correct
 # Not: Legend(ax, :rt)
 ```
 
+---
+
 #### 3. Box plot not working in Makie
 
 Box plots have issues in newer Makie versions. Use scatter alternative:
+
 ```julia
 for (i, data) in enumerate(groups)
     x_jitter = fill(i, length(data)) .+ (rand(length(data)) .- 0.5) .* 0.3
@@ -438,15 +559,19 @@ end
 #### 4. Plots not displaying
 
 **For Plots.jl:**
+
 ```julia
 display(p)  # Explicitly display
 gui()       # Open GUI window
 ```
 
 **For Makie.jl:**
+
 ```julia
 display(fig)  # Explicitly display
 ```
+
+---
 
 #### 5. Low resolution output
 
@@ -461,6 +586,8 @@ save_plot(p, filename="plot.png")
 use_makie_theme(:publication)  # 600 DPI
 save_plot(fig, filename="plot.png", dpi=600)
 ```
+
+---
 
 ### Performance Tips
 
